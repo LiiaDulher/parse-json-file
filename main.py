@@ -1,6 +1,7 @@
 import json
 import pprint
-import json_parser
+from path_parser import path_parser
+from user_interaction import selected_input
 
 
 def read_json(file_name):
@@ -11,18 +12,6 @@ def read_json(file_name):
     with open(file_name, encoding='utf-8') as file:
         data = json.load(file)
     return data
-
-
-def selected_input(input_list):
-    """
-    (list) -> str
-    Returns user's input from input list.
-    """
-    while True:
-        user_input = input()
-        if user_input in input_list:
-            return user_input
-        print("Wrong input. Please try again:")
 
 
 def parse_list(data):
@@ -65,14 +54,13 @@ def parse_dict(data):
     return data[user_input]
 
 
-def main(file_name):
+def manual_mode(data):
     """
-    (str) -> None
-    Parses given json file.
+    (object) -> None
+    Allows user to make manual object parse.
     """
-    data = read_json(file_name)
-    previous_object = data
     pp = pprint.PrettyPrinter(indent=4)
+    previous_object = data
     while True:
         if isinstance(data, dict):
             user_data = parse_dict(data)
@@ -96,6 +84,42 @@ def main(file_name):
                 data = previous_object
         else:
             print(data)
+            break
+
+
+def path_mode(data):
+    """
+    (object) -> None
+    Allows user to get to the object using path.
+    """
+    print("Enter path(example /0/sections/1/divisionName) or 'back' to return:")
+    pp = pprint.PrettyPrinter(indent=4)
+    while True:
+        user_path = input()
+        if user_path == 'back':
+            break
+        result = path_parser(data, user_path)
+        if result:
+            pp.pprint(result)
+            break
+        else:
+            print("Invalid path. Please try again:")
+
+
+def main(file_name):
+    """
+    (str) -> None
+    Parses given json file.
+    """
+    data = read_json(file_name)
+    while True:
+        print("Enter 'path' to get a needed object or 'parse' to explore object manually or 'exit'.")
+        user_input = selected_input(['path', 'parse', 'exit'])
+        if user_input == 'path':
+            path_mode(data)
+        elif user_input == 'parse':
+            manual_mode(data)
+        else:
             break
 
 

@@ -4,7 +4,7 @@ def path_parser(data, way):
     Returns object, which is in the following way.
     """
     current_data = data
-    way_list = way.split("/")
+    way_list = way.split("/")[1:]
     for key in way_list:
         if isinstance(current_data, list) and key.isnumeric() and int(key) < len(data):
             current_data = current_data[int(key)]
